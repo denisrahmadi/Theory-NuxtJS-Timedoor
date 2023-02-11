@@ -1,23 +1,59 @@
 <template>
-<div>
+  <div>
     <main>
-        <div class="add-recipe">
-            <label>
-                <b>Image Link : </b>
-                <input type="text" placeholder="https://www.image.com/..." class="add-recipe__img">
-            </label>
-            <input type="text" placeholder="Title ..." class="add-recipe__title">
-            <hr>
-            <textarea placeholder="Your Recipe ....." class="add-recipe__desc"></textarea>
-            <button class="add-recipe__button">Add Recipe</button>
-        </div>
+      <div class="add-recipe">
+        <label>
+          <b>Image Link : </b>
+          <input
+            type="text"
+            placeholder="https://www.image.com/..."
+            class="add-recipe__img"
+            v-model="newRecipe.recipeImage"
+          />
+        </label>
+        <input 
+          type="text" 
+          placeholder="Title ..." 
+          class="add-recipe__title" 
+          v-model="newRecipe.recipeTitle" 
+        />
+        <hr />
+        <textarea
+          placeholder="Your Recipe ....."
+          class="add-recipe__desc"
+          v-model="newRecipe.body"
+        ></textarea>
+        <button 
+          class="add-recipe__button" 
+          @click="addRecipe"
+        >
+          Add Recipe
+        </button>
+      </div>
     </main>
-</div>
+  </div>
 </template>
 <script>
 export default {
-    
-}
+  data() {
+    return {
+      newRecipe: {
+        id: null,
+        recipeImage: "",
+        recipeTitle: "",
+        likes: 0,
+        body: ""
+      },
+    };
+  },
+  methods: {
+    addRecipe(){
+      let newId = this.$store.getters.lastIdRecipes + 1
+      this.$store.commit('addNewRecipe', {id: newId, ...this.newRecipe})
+      this.$router.push('/')
+    }
+  }
+};
 </script>
 <style scoped>
 body {
