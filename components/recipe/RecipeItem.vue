@@ -1,26 +1,28 @@
 <template>
   <div>
-    <RecipeList :dataRecipes="recipes" />
+    <div class="recipes-content">
+      <img
+        class="recipes-content__img"
+        :alt="recipe.recipeTitle"
+        :src="recipe.recipeImage"
+      />
+      <div class="recipes-content__body">
+        <h1 class="recipes-content__body__title">
+          {{ recipe.recipeTitle }}
+        </h1>
+        <div class="recipes-content__body__review">
+          <img src="../../static/images/red-heart.png" alt="Heart" />
+          <p>{{ recipe.likes }} likes</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-
 <script>
-import RecipeList from '../components/recipe/RecipeList.vue';
-
 export default {
-    name: "IndexPage",
-    data() {
-        return {};
-    },
-    computed: {
-        recipes() {
-            return this.$store.getters.recipeData;
-        }
-    },
-    components: { RecipeList }
+    props: ['recipe']
 };
 </script>
-
 <style scoped>
 body {
   margin: 0px;

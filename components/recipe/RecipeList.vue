@@ -1,26 +1,20 @@
 <template>
-  <div>
-    <RecipeList :dataRecipes="recipes" />
-  </div>
+    <div class="recipes">
+        <RecipeItem 
+            v-for="data in dataRecipes" 
+            :key="data.id" 
+            :recipe="data" 
+        />
+    </div>
 </template>
-
 <script>
-import RecipeList from '../components/recipe/RecipeList.vue';
+import RecipeItem from './RecipeItem.vue';
 
 export default {
-    name: "IndexPage",
-    data() {
-        return {};
-    },
-    computed: {
-        recipes() {
-            return this.$store.getters.recipeData;
-        }
-    },
-    components: { RecipeList }
-};
+    props:['dataRecipes'],
+    components: { RecipeItem }
+}
 </script>
-
 <style scoped>
 body {
   margin: 0px;
