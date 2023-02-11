@@ -51,6 +51,7 @@ export default {
                  .then(() => this.$router.push('/') )
     },
   },
+  middleware: 'auth'
 };
 </script>
 <style scoped>

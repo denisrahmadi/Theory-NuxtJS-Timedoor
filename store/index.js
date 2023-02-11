@@ -40,6 +40,7 @@ export const state = () => ({
   //   ],
   recipes: [],
   token: null,
+  userData: null,
 });
 
 export const getters = {
@@ -72,6 +73,10 @@ export const mutations = {
 
   setToken(state, payload) {
     state.token = payload;
+  },
+
+  setUserData(state, payload) {
+    state.userData = payload;
   },
 };
 
@@ -114,8 +119,16 @@ export const actions = {
         email: authData.email,
         password: authData.password,
         returnSecureToken: true,
+        displayName: authData.displayName,
       })
-      .then((response) => commit("setToken", response.data.idToken))
+      .then((response) => {
+        commit("setToken", response.data.idToken);
+        commit("setUserData", {
+          userName: response.data.displayName,
+          userId: response.data.localId,
+          email: response.data.email,
+        });
+      })
       .catch((error) => console.log(error));
   },
 };

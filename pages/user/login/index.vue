@@ -1,11 +1,36 @@
 <template>
-  <form @submit.prevent="onSubmit">
-    <div class="container">
-      <input v-model="email" type="email" placeholder="Enter Email" name="uname" required />
-      <input v-model="password" type="password" placeholder="Enter Password" name="psw" required />
-      <button type="submit">Log In</button>
-    </div>
-  </form>
+  <div>
+    <h1 class="title">LOGIN</h1>
+    <form @submit.prevent="onSubmit">
+      <div class="container">
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Enter Email"
+          name="uname"
+          required
+        />
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Enter Password"
+          name="psw"
+          required
+        />
+        <button type="submit">Log In</button>
+        <div style="display: flex;">
+            <p>Gapunya akun?</p>
+            <nuxt-link
+                tag="p"
+                to="/user/signup"
+                style="cursor: pointer; color: blue;"
+            >
+                Sign up
+            </nuxt-link>
+        </div>
+      </div>
+    </form>
+  </div>
 </template>
 <script>
 export default {
@@ -17,18 +42,27 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$store.dispatch("authenticateUser", {
-        isLogin: true,
-        email: this.email,
-        password: this.password,
-      }).then(() => {
-        this.$router.push('/')
-      })
+      this.$store
+        .dispatch("authenticateUser", {
+          isLogin: true,
+          email: this.email,
+          password: this.password,
+        })
+        .then(() => {
+          this.$router.push("/");
+        });
     },
   },
 };
 </script>
 <style>
+.title {
+  text-align: center;
+}
+.login {
+  text-align: center;
+}
+
 input[type="email"],
 input[type="password"] {
   width: 20%;

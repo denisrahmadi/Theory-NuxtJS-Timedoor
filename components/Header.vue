@@ -4,14 +4,51 @@
       <h1 class="header-title">Food Recipes</h1>
       <nav class="header-nav">
         <a href="index.html" class="header-nav__link">Home</a>
-        <nuxt-link to="/add" class="header-nav__link">Add Recipes</nuxt-link>
+        <nuxt-link 
+          to="/add" 
+          class="header-nav__link"
+        >
+          Add Recipes
+        </nuxt-link>
+        <nuxt-link
+          tag="a"
+          to="/user/login"
+          class="header-nav__link"
+          v-if="!$store.getters.isAuthenticated"
+        >
+          Login
+        </nuxt-link>
+        <a 
+          class="header-nav__link" 
+          v-if="$store.getters.isAuthenticated"
+          @click="logout"
+        >
+          Logout
+        </a>
+        <a 
+          class="header-nav__link" 
+          style="font-weight: bold;"
+          v-if="$store.getters.isAuthenticated"
+        >
+          {{ $store.state.userData.userName }}
+        </a>
       </nav>
     </header>
   </div>
 </template>
+
 <script>
-export default {};
+export default {
+  methods: {
+    logout(){
+      this.$store.commit('setToken', null)
+      this.$router.push('/')
+
+    }
+  }
+};
 </script>
+
 <style scoped>
 body {
   margin: 0px;
