@@ -39,6 +39,7 @@ export const state = () => ({
   //     },
   //   ],
   recipes: [],
+  token: null,
 });
 
 export const getters = {
@@ -52,8 +53,12 @@ export const getters = {
   },
 
   detailRecipe: (state) => (id) => {
-    return state.recipes.find((recipe) => recipe.id === id)
-  } 
+    return state.recipes.find((recipe) => recipe.id === id);
+  },
+
+  isAuthenticated(state) {
+    return state.token != null;
+  },
 };
 
 export const mutations = {
@@ -63,6 +68,10 @@ export const mutations = {
 
   setRecipe(state, payload) {
     state.recipes = payload;
+  },
+
+  setToken(state, payload) {
+    state.token = payload;
   },
 };
 
@@ -82,14 +91,31 @@ export const actions = {
       .catch((e) => context.error(e));
   },
 
-  addRecipe({ commit }, recipe) {
+  addRecipe({ commit, state }, recipe) {
     return axios
       .post(
-        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json",
+        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=" +
+          state.token,
         recipe
       )
       .then((response) => {
-        commit("addNewRecipe", recipe)
+        commit("addNewRecipe", recipe);
       });
+  },
+
+  authenticateUser({ commit }, authData) {
+    let webAPIKey = "AIzaSyBV4Aw9RePLtyl3AIj43sPs6etE6ktnivU";
+    let authUrl = authData.isLogin
+      ? "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key="
+      : "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+
+    return axios
+      .post(authUrl + webAPIKey, {
+        email: authData.email,
+        password: authData.password,
+        returnSecureToken: true,
+      })
+      .then((response) => commit("setToken", response.data.idToken))
+      .catch((error) => console.log(error));
   },
 };
