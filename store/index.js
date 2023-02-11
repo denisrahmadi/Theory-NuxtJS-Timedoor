@@ -50,6 +50,10 @@ export const getters = {
     let recipeLength = state.recipes.length;
     return state.recipes[recipeLength - 1].id;
   },
+
+  detailRecipe: (state) => (id) => {
+    return state.recipes.find((recipe) => recipe.id === id)
+  } 
 };
 
 export const mutations = {

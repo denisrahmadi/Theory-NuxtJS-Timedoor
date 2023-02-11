@@ -1,32 +1,24 @@
 <template>
   <div>
-    <nuxt-link 
-        class="recipes-content"
-        tag="div"
-        :to="{ name: 'recipe-recipeId', params: {recipeId: recipe.id}}"
-    >
-      <img
-        class="recipes-content__img"
-        :alt="recipe.recipeTitle"
-        :src="recipe.recipeImage"
-      />
-      <div class="recipes-content__body">
-        <h1 class="recipes-content__body__title">
-          {{ recipe.recipeTitle }}
-        </h1>
-        <div class="recipes-content__body__review">
-          <img src="../../static/images/red-heart.png" alt="Heart" />
-          <p>{{ recipe.likes }} likes</p>
-        </div>
-      </div>
-    </nuxt-link>
+    <img class="recipes-detail__img" alt="Pasta" :src="recipe.recipeImage" />
+    <h1 class="recipes-detail__title">
+      {{ recipe.recipeTitle }}
+    </h1>
+    <p class="recipes-detail__body">
+      {{ recipe.body }}
+    </p>
   </div>
 </template>
+
 <script>
 export default {
-    props: ['recipe']
+  asyncData({ store, params }) {
+    const recipe = store.getters.detailRecipe(params.recipeId);
+    return { recipe };
+  },
 };
 </script>
+
 <style scoped>
 body {
   margin: 0px;
