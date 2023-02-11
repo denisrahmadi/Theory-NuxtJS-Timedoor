@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from "axios";
 
 export const state = () => ({
   // recipes: [
@@ -76,5 +76,16 @@ export const actions = {
         commit("setRecipe", recipeArray);
       })
       .catch((e) => context.error(e));
+  },
+
+  addRecipe({ commit }, recipe) {
+    return axios
+      .post(
+        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json",
+        recipe
+      )
+      .then((response) => {
+        commit("addNewRecipe", recipe)
+      });
   },
 };

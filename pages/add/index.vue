@@ -47,14 +47,8 @@ export default {
   },
   methods: {
     addRecipe() {
-      axios
-        .post(
-          "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json",
-          this.newRecipe
-        )
-        .then((response) => {
-          this.$router.push("/");
-        });
+      this.$store.dispatch("addRecipe", this.newRecipe)
+                 .then(() => this.$router.push('/') )
     },
   },
 };
