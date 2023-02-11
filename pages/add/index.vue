@@ -11,11 +11,11 @@
             v-model="newRecipe.recipeImage"
           />
         </label>
-        <input 
-          type="text" 
-          placeholder="Title ..." 
-          class="add-recipe__title" 
-          v-model="newRecipe.recipeTitle" 
+        <input
+          type="text"
+          placeholder="Title ..."
+          class="add-recipe__title"
+          v-model="newRecipe.recipeTitle"
         />
         <hr />
         <textarea
@@ -23,17 +23,16 @@
           class="add-recipe__desc"
           v-model="newRecipe.body"
         ></textarea>
-        <button 
-          class="add-recipe__button" 
-          @click="addRecipe"
-        >
+        <button class="add-recipe__button" @click="addRecipe">
           Add Recipe
         </button>
       </div>
     </main>
   </div>
 </template>
+
 <script>
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -42,17 +41,22 @@ export default {
         recipeImage: "",
         recipeTitle: "",
         likes: 0,
-        body: ""
+        body: "",
       },
     };
   },
   methods: {
-    addRecipe(){
-      let newId = this.$store.getters.lastIdRecipes + 1
-      this.$store.commit('addNewRecipe', {id: newId, ...this.newRecipe})
-      this.$router.push('/')
-    }
-  }
+    addRecipe() {
+      axios
+        .post(
+          "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json",
+          this.newRecipe
+        )
+        .then((response) => {
+          this.$router.push("/");
+        });
+    },
+  },
 };
 </script>
 <style scoped>
