@@ -60,6 +60,10 @@ export const getters = {
   isAuthenticated(state) {
     return state.token != null;
   },
+
+  userId(state){
+    return state.userData.userId;
+  }
 };
 
 export const mutations = {
@@ -99,12 +103,11 @@ export const actions = {
   addRecipe({ commit, state }, recipe) {
     return axios
       .post(
-        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=" +
-          state.token,
-        recipe
+        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=" + state.token,
+        {...recipe, userId: state.userData.userId}
       )
       .then((response) => {
-        commit("addNewRecipe", recipe);
+        commit("addNewRecipe", {...recipe, userId: state.userData.userId});
       });
   },
 

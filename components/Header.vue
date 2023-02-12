@@ -25,13 +25,14 @@
         >
           Logout
         </a>
-        <a 
+        <nuxt-link
+          tag="a"
+          to="/user" 
           class="header-nav__link" 
-          style="font-weight: bold;"
           v-if="$store.getters.isAuthenticated"
         >
           {{ $store.state.userData.userName }}
-        </a>
+        </nuxt-link>
       </nav>
     </header>
   </div>
