@@ -9,15 +9,13 @@ import RecipeList from '../components/recipe/RecipeList.vue';
 
 export default {
     name: "IndexPage",
-    data() {
-        return {};
-    },
     computed: {
         recipes() {
             return this.$store.getters.recipeData;
         }
     },
-    components: { RecipeList }
+    components: { RecipeList },
+    middleware: "check-auth",
 };
 </script>
 

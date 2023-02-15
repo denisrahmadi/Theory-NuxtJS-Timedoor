@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookie from "js-cookie";
 
 export const state = () => ({
   // recipes: [
@@ -61,9 +62,9 @@ export const getters = {
     return state.token != null;
   },
 
-  userId(state){
+  userId(state) {
     return state.userData.userId;
-  }
+  },
 };
 
 export const mutations = {
@@ -103,11 +104,12 @@ export const actions = {
   addRecipe({ commit, state }, recipe) {
     return axios
       .post(
-        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=" + state.token,
-        {...recipe, userId: state.userData.userId}
+        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=" +
+          state.token,
+        { ...recipe, userId: state.userData.userId }
       )
       .then((response) => {
-        commit("addNewRecipe", {...recipe, userId: state.userData.userId});
+        commit("addNewRecipe", { ...recipe, userId: state.userData.userId });
       });
   },
 
@@ -131,7 +133,46 @@ export const actions = {
           userId: response.data.localId,
           email: response.data.email,
         });
+        localStorage.setItem("token", response.data.idToken);
+        Cookie.set("jwt", response.data.idToken);
+
+        const userData = {
+          userName: response.data.displayName,
+          userId: response.data.localId,
+          email: response.data.email
+        }
+        localStorage.setItem("user", JSON.stringify(userData))
+        Cookie.set("acc_user", JSON.stringify(userData))
       })
       .catch((error) => console.log(error));
   },
+
+  initAuth({ commit }, req){
+    let user
+    let token
+
+    if (req) {
+      if (!req.headers.cookie){
+        return
+      }
+      
+      const jwtCookie = req.headers.cookie.split(";").find((c) => c.trim().startsWith("jwt="))
+      const accUserCookie = req.headers.cookie.split(";").find((c) => c.trim().startsWith("acc_user="))
+      const userCookie = accUserCookie.substr(accUserCookie.indexOf("=") + 1)
+      user = JSON.parse(decodeURIComponent(userCookie))
+
+      if (!jwtCookie) {
+        return
+      }
+      token = jwtCookie.split("=")[1]
+      
+    } else {
+      token = localStorage.getItem("token")
+      user = JSON.parse(localStorage.getItem("user"))
+    }
+
+    commit("setToken", token)
+    commit("setUserData", user)
+    
+  }
 };

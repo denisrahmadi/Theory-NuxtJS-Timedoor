@@ -3,9 +3,12 @@
     <RecipeList :dataRecipes="recipes"/>
   </div>
 </template>
+
 <script>
 import RecipeList from "../../components/recipe/RecipeList.vue";
+login
 export default {
+  middleware: ["check-auth", "auth"],
   components: {
     RecipeList
   },
