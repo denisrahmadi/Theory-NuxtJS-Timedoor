@@ -42,8 +42,8 @@
 export default {
   methods: {
     logout(){
-      this.$store.commit('setToken', null)
-      this.$router.push('/')
+      this.$store.dispatch('logout')
+      this.$router.push('/user/login')
 
     }
   }

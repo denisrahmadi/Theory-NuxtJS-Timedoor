@@ -139,40 +139,52 @@ export const actions = {
         const userData = {
           userName: response.data.displayName,
           userId: response.data.localId,
-          email: response.data.email
-        }
-        localStorage.setItem("user", JSON.stringify(userData))
-        Cookie.set("acc_user", JSON.stringify(userData))
+          email: response.data.email,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        Cookie.set("acc_user", JSON.stringify(userData));
       })
       .catch((error) => console.log(error));
   },
 
-  initAuth({ commit }, req){
-    let user
-    let token
+  initAuth({ commit }, req) {
+    let user;
+    let token;
 
     if (req) {
-      if (!req.headers.cookie){
-        return
+      if (!req.headers.cookie) {
+        return;
       }
-      
-      const jwtCookie = req.headers.cookie.split(";").find((c) => c.trim().startsWith("jwt="))
-      const accUserCookie = req.headers.cookie.split(";").find((c) => c.trim().startsWith("acc_user="))
-      const userCookie = accUserCookie.substr(accUserCookie.indexOf("=") + 1)
-      user = JSON.parse(decodeURIComponent(userCookie))
+
+      const jwtCookie = req.headers.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("jwt="));
+      const accUserCookie = req.headers.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("acc_user="));
+      const userCookie = accUserCookie.substr(accUserCookie.indexOf("=") + 1);
+      user = JSON.parse(decodeURIComponent(userCookie));
 
       if (!jwtCookie) {
-        return
+        return;
       }
-      token = jwtCookie.split("=")[1]
-      
+      token = jwtCookie.split("=")[1];
     } else {
-      token = localStorage.getItem("token")
-      user = JSON.parse(localStorage.getItem("user"))
+      token = localStorage.getItem("token");
+      user = JSON.parse(localStorage.getItem("user"));
     }
 
-    commit("setToken", token)
-    commit("setUserData", user)
-    
-  }
+    commit("setToken", token);
+    commit("setUserData", user);
+  },
+
+  logout({ commit }) {
+    commit("setToken", null);
+    Cookie.remove("jwt");
+    Cookie.remove("acc_user");
+    if (process.client) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
+  },
 };
