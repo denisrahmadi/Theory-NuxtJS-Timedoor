@@ -23,10 +23,28 @@
               {{ recipe.recipeTitle }}
             </nuxt-link>
             <div
-              class="recipes-content__body__review card-footer bg-transparent pe-auto"
+              class="recipes-content__body__review card-footer bg-transparent row"
             >
-              <img :src="likeImage" alt="Heart" @click="likeClick" />
-              <p>{{ likeCount }} likes</p>
+              <div class="col-2">
+                <img :src="likeImage" alt="Heart" @click="likeClick" />
+              </div>
+              <div class="col-6">
+                <p>{{ likeCount }} likes</p>
+              </div>
+              <div class="col-2" v-show="isUser">
+                <img
+                  src="../../static/images/delete.png"
+                  alt="delete"
+                  @click="deleteRecipe"
+                />
+              </div>
+              <div class="col-2" v-show="isUser">
+                <img
+                  src="../../static/images/edit.png"
+                  alt="edit"
+                  @click="editRecipe"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -36,7 +54,17 @@
 </template>
 <script>
 export default {
-  props: ["recipe"],
+  // props: ["recipe"],
+  props: {
+    recipe: {
+      type: Object,
+      default: "",
+    },
+    isUser: {
+      type: Boolean,
+      default: false,
+    },
+  },
   methods: {
     likeClick() {
       if (!this.$store.getters.isAuthenticated) {
@@ -47,26 +75,32 @@ export default {
       const recipe = this.recipe;
       if (recipe.dataLikes.length === 1 && recipe.dataLikes[0] === "null") {
         recipe.dataLikes[0] = userEmail;
-      } 
-      else {
+      } else {
         const checkLike = recipe.dataLikes.filter((item) => item === userEmail);
         if (checkLike.length === 0) {
           recipe.dataLikes.push(userEmail);
-        } 
-        else {
-          if ( recipe.dataLikes.length === 1 ) {
-            recipe.dataLikes[0] = "null"
-          } 
-          else {
-            const userEmailIndex = recipe.dataLikes.findIndex(item => item === userEmail)
-            recipe.dataLikes.splice(userEmailIndex, 1)
+        } else {
+          if (recipe.dataLikes.length === 1) {
+            recipe.dataLikes[0] = "null";
+          } else {
+            const userEmailIndex = recipe.dataLikes.findIndex(
+              (item) => item === userEmail
+            );
+            recipe.dataLikes.splice(userEmailIndex, 1);
           }
         }
       }
-      let {id: _, ...newRecipe} = recipe
-      this.$store.dispatch("likeUpdate", { recipeId: this.recipe.id, newDataRecipe: newRecipe })
+      let { id: _, ...newRecipe } = recipe;
+      this.$store.dispatch("likeUpdate", {
+        recipeId: this.recipe.id,
+        newDataRecipe: newRecipe,
+      });
+    },
+    deleteRecipe() {
+      this.$store.dispatch("deleteRecipe", this.recipe.id);
     },
   },
+
   computed: {
     likeCount() {
       if (this.recipe.dataLikes.length === 1) {
@@ -79,7 +113,9 @@ export default {
     },
     likeImage() {
       const userEmail = this.$store.getters.userEmail;
-      const checkLike = this.recipe.dataLikes.filter((item) => item === userEmail);
+      const checkLike = this.recipe.dataLikes.filter(
+        (item) => item === userEmail
+      );
       if (checkLike.length === 0) {
         return "images/heart-black.png";
       }

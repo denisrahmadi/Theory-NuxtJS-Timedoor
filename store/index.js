@@ -2,43 +2,6 @@ import axios from "axios";
 import Cookie from "js-cookie";
 
 export const state = () => ({
-  // recipes: [
-  //     {
-  //       id: 1,
-  //       recipeImage: "https://i.ibb.co/SBsMYNC/Rendang.jpg",
-  //       recipeTitle: "Rendang",
-  //       likes: 100,
-  //       body: "Rendang Recipe",
-  //     },
-  //     {
-  //       id: 2,
-  //       recipeImage: "https://i.ibb.co/MRNhgzW/Tomyam.jpg",
-  //       recipeTitle: "Tomyam",
-  //       likes: 40,
-  //       body: "Tomyam Recipe",
-  //     },
-  //     {
-  //       id: 3,
-  //       recipeImage: "https://i.ibb.co/CW4tVvp/Spaghetti-aglioo-o-lio.jpg",
-  //       recipeTitle: "Spagethi Aglio Olio",
-  //       likes: 200,
-  //       body: "Spagethi Aglio Olio Recipe",
-  //     },
-  //     {
-  //       id: 4,
-  //       recipeImage: "https://i.ibb.co/z7zRVxV/Spaghetti-Carbonara.jpg",
-  //       recipeTitle: "Spagethi Carbonara",
-  //       likes: 200,
-  //       body: "Spagethi Carbonara Recipe",
-  //     },
-  //     {
-  //       id: 5,
-  //       recipeImage: "https://i.ibb.co/Cn1XPNB/Kimchi.jpg",
-  //       recipeTitle: "Kimchi",
-  //       likes: 10,
-  //       body: "Kimchi Recipe",
-  //     },
-  //   ],
   recipes: [],
   token: null,
   userData: null,
@@ -66,9 +29,9 @@ export const getters = {
     return state.userData.userId;
   },
 
-  userEmail(state){
-    return state.userData.email
-  }
+  userEmail(state) {
+    return state.userData.email;
+  },
 };
 
 export const mutations = {
@@ -86,6 +49,11 @@ export const mutations = {
 
   setUserData(state, payload) {
     state.userData = payload;
+  },
+
+  deleteRecipe(state, payload) {
+    const recipes = state.recipes.filter((item) => item.id !== payload);
+    state.recipes = recipes;
   },
 };
 
@@ -110,25 +78,24 @@ export const actions = {
   // ---------------------------------------------------------------------------------------------------
 
   addRecipe({ commit, state }, recipe) {
-    return axios.post(
+    return axios
+      .post(
         `https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=${state.token}`,
-        { 
-          ...recipe, 
-          userId: state.userData.userId, 
+        {
+          ...recipe,
+          userId: state.userData.userId,
           username: state.userData.username,
-          dataLikes: ["null"] 
+          dataLikes: ["null"],
         }
       )
       .then((response) => {
-        commit("addNewRecipe", 
-          { 
-            ...recipe, 
-            userId: state.userData.userId, 
-            username: state.userData.username,
-            id: response.data.name,
-            dataLikes: ["null"],
-          }
-        );
+        commit("addNewRecipe", {
+          ...recipe,
+          userId: state.userData.userId,
+          username: state.userData.username,
+          id: response.data.name,
+          dataLikes: ["null"],
+        });
       });
   },
 
@@ -152,8 +119,19 @@ export const actions = {
           userId: response.data.localId,
           email: response.data.email,
         });
+
+        // Menyimpan Token pada localStorage dan Cookies
         localStorage.setItem("token", response.data.idToken);
         Cookie.set("jwt", response.data.idToken);
+        // Menyimpan data expires pada local storage dan cookie
+        localStorage.setItem(
+          "tokenExpiration",
+          new Date().getTime() + Number.parseInt(response.data.expiresIn) * 1000
+        );
+        Cookie.set(
+          "expirationDate",
+          new Date().getTime() + Number.parseInt(response.data.expiresIn) * 1000
+        );
 
         const userData = {
           username: response.data.displayName,
@@ -166,9 +144,10 @@ export const actions = {
       .catch((error) => console.log(error));
   },
 
-  initAuth({ commit }, req) {
+  initAuth({ commit, dispatch }, req) {
     let user;
     let token;
+    let expirationDate;
 
     if (req) {
       if (!req.headers.cookie) {
@@ -181,6 +160,7 @@ export const actions = {
       const accUserCookie = req.headers.cookie
         .split(";")
         .find((c) => c.trim().startsWith("acc_user="));
+      console.log(accUserCookie);
       const userCookie = accUserCookie.substr(accUserCookie.indexOf("=") + 1);
       user = JSON.parse(decodeURIComponent(userCookie));
 
@@ -188,9 +168,20 @@ export const actions = {
         return;
       }
       token = jwtCookie.split("=")[1];
+      expirationDate = req.headers.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("expirationDate="))
+        .split("=")[1];
     } else {
       token = localStorage.getItem("token");
       user = JSON.parse(localStorage.getItem("user"));
+      expirationDate = localStorage.getItem("tokenExpiration");
+    }
+
+    if (new Date().getTime() > +expirationDate || !token) {
+      console.log("No token or invalid token");
+      dispatch("logout");
+      return;
     }
 
     commit("setToken", token);
@@ -207,26 +198,38 @@ export const actions = {
     }
   },
 
-  likeUpdate({ commit, state, dispatch}, recipe){
+  likeUpdate({ commit, state, dispatch }, recipe) {
     return axios
-            .put(`https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes/${recipe.recipeId}.json?auth=${state.token}`,
-                   recipe.newDataRecipe
-            )
-            .then(res => dispatch("getRecipe"))
+      .put(
+        `https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes/${recipe.recipeId}.json?auth=${state.token}`,
+        recipe.newDataRecipe
+      )
+      .then((res) => dispatch("getRecipe"));
   },
 
-  getRecipe({commit}){
+  getRecipe({ commit }) {
     return axios
-    .get(
-      "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json"
-    )
-    .then((response) => {
-      const recipeArray = [];
-      for (const key in response.data) {
-        recipeArray.push({ ...response.data[key], id: key });
-      }
-      commit("setRecipe", recipeArray);
-    })
-    .catch((e) => context.error(e));
-  }
+      .get(
+        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json"
+      )
+      .then((response) => {
+        const recipeArray = [];
+        for (const key in response.data) {
+          recipeArray.push({ ...response.data[key], id: key });
+        }
+        commit("setRecipe", recipeArray);
+      })
+      .catch((e) => context.error(e));
+  },
+
+  deleteRecipe({ commit, state }, recipeId) {
+    return axios
+      .delete(
+        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes/" +
+          recipeId +
+          ".json?auth=" +
+          state.token
+      )
+      .then((res) => commit("deleteRecipe"), recipeId);
+  },
 };

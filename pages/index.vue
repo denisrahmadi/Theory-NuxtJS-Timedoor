@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="mt-5">
-      <RecipeList :dataRecipes="recipes" />
+      <RecipeList 
+        :dataRecipes="recipes"
+      />
     </div>
   </div>
 </template>

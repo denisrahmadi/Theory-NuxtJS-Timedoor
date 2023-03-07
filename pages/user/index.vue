@@ -1,6 +1,9 @@
 <template>
   <div>
-    <RecipeList :dataRecipes="recipes"/>
+    <RecipeList 
+      :dataRecipes="recipes"
+      :isUser="true" 
+    />
   </div>
 </template>
 
