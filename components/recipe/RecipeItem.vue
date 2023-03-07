@@ -1,25 +1,35 @@
 <template>
   <div>
-    <nuxt-link 
-        class="recipes-content"
-        tag="div"
-        :to="{ name: 'recipe-recipeId', params: {recipeId: recipe.id}}"
-    >
-      <img
-        class="recipes-content__img"
-        :alt="recipe.recipeTitle"
-        :src="recipe.recipeImage"
-      />
-      <div class="recipes-content__body">
-        <h1 class="recipes-content__body__title">
-          {{ recipe.recipeTitle }}
-        </h1>
-        <div class="recipes-content__body__review">
-          <img src="../../static/images/red-heart.png" alt="Heart" />
-          <p>{{ recipe.likes }} likes</p>
+    <div class="d-flex">
+      <nuxt-link 
+      tag="div"
+      :to="{ name: 'recipe-recipeId', params: {recipeId: recipe.id}}"
+      class="w-100"
+      >
+        <div class="card">
+          <img
+          class="recipes-content__img card-img-top rounded"
+          :alt="recipe.recipeTitle"
+          :src="recipe.recipeImage"
+        />
+          <div class="card-body">
+            <p class="username">{{ recipe.username }}</p>
+            <nuxt-link 
+              tag="h1"
+              :to="{ name: 'recipe-recipeId', params: { recipeId: recipe.id } }" 
+              class="card-text fs-5 text" 
+              style="height: 45px; align-item: center;"
+            >
+              {{ recipe.recipeTitle }}
+            </nuxt-link>
+            <div class="recipes-content__body__review card-footer bg-transparent">
+              <img src="images/heart-black.png" alt="Heart" />
+              <p>{{ recipe.likes }} likes</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </nuxt-link>
+      </nuxt-link>
+    </div>
   </div>
 </template>
 <script>
@@ -28,6 +38,10 @@ export default {
 };
 </script>
 <style scoped>
+.username {
+margin-bottom: 0px;
+}
+
 body {
   margin: 0px;
 }
@@ -58,19 +72,11 @@ main {
 }
 
 /* Recipe Content */
-.recipes-content {
-  background-color: #eef2e6;
-  padding: 10px;
-  margin: 13px 13px;
-}
 
-.recipes-content__body {
-  padding: 5px;
-}
 
 .recipes-content__img {
-  width: 280px;
-  height: 210px;
+  width: 200px;
+  height: 25vh;
 }
 
 .recipes-content__body__review {

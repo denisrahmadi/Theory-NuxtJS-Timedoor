@@ -106,10 +106,10 @@ export const actions = {
       .post(
         "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=" +
           state.token,
-        { ...recipe, userId: state.userData.userId }
+        { ...recipe, userId: state.userData.userId, username: state.userData.username }
       )
       .then((response) => {
-        commit("addNewRecipe", { ...recipe, userId: state.userData.userId });
+        commit("addNewRecipe", { ...recipe, userId: state.userData.userId, username: state.userData.username });
       });
   },
 
@@ -129,7 +129,7 @@ export const actions = {
       .then((response) => {
         commit("setToken", response.data.idToken);
         commit("setUserData", {
-          userName: response.data.displayName,
+          username: response.data.displayName,
           userId: response.data.localId,
           email: response.data.email,
         });
@@ -137,7 +137,7 @@ export const actions = {
         Cookie.set("jwt", response.data.idToken);
 
         const userData = {
-          userName: response.data.displayName,
+          username: response.data.displayName,
           userId: response.data.localId,
           email: response.data.email,
         };

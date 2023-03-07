@@ -1,15 +1,23 @@
 <template>
   <div>
     <header class="header">
-      <h1 class="header-title">Food Recipes</h1>
+      <nuxt-link 
+        tag="a" 
+        class="navbar-brand text-brand" 
+        to="/"
+      >
+        <img
+          src="/images/logo.png"
+          alt="Logo"
+          width="44"
+          height="44"
+          class="d-inline-block align-text-center"
+        />
+        Food Recipes
+      </nuxt-link>
       <nav class="header-nav">
-        <a href="index.html" class="header-nav__link">Home</a>
-        <nuxt-link 
-          to="/add" 
-          class="header-nav__link"
-        >
-          Add Recipes
-        </nuxt-link>
+        <nuxt-link to="/" class="header-nav__link">Home</nuxt-link>
+        <nuxt-link to="/add" class="header-nav__link"> Add Recipes </nuxt-link>
         <nuxt-link
           tag="a"
           to="/user/login"
@@ -18,8 +26,8 @@
         >
           Login
         </nuxt-link>
-        <a 
-          class="header-nav__link" 
+        <a
+          class="header-nav__link"
           v-if="$store.getters.isAuthenticated"
           @click="logout"
         >
@@ -27,11 +35,11 @@
         </a>
         <nuxt-link
           tag="a"
-          to="/user" 
-          class="header-nav__link" 
+          to="/user"
+          class="header-nav__link"
           v-if="$store.getters.isAuthenticated"
         >
-          {{ $store.state.userData.userName }}
+          {{ $store.state.userData.username }}
         </nuxt-link>
       </nav>
     </header>
@@ -41,12 +49,11 @@
 <script>
 export default {
   methods: {
-    logout(){
-      this.$store.dispatch('logout')
-      this.$router.push('/user/login')
-
-    }
-  }
+    logout() {
+      this.$store.dispatch("logout");
+      this.$router.push("/user/login");
+    },
+  },
 };
 </script>
 
@@ -62,6 +69,9 @@ header {
   padding-left: 40px;
   padding-right: 40px;
   background-color: #eef2e6;
+}
+.text-brand{
+  font-family: 'Satisfy', cursive;
 }
 
 main {

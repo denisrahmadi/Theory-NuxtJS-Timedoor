@@ -8,6 +8,7 @@
           type="text"
           placeholder="Enter Username"
           name="username"
+          autocomplete="off"
           required
         />
         <input

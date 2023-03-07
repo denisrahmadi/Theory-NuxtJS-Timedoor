@@ -2,15 +2,12 @@
   <div>
     <main>
       <div class="add-recipe">
-        <label>
-          <b>Image Link : </b>
-          <input
-            type="text"
-            placeholder="https://www.image.com/..."
-            class="add-recipe__img"
-            v-model="newRecipe.recipeImage"
-          />
-        </label>
+        <input
+          type="text"
+          placeholder="Image Link : https://www.image.com/..."
+          class="add-recipe__title"
+          v-model="newRecipe.recipeImage"
+        />
         <input
           type="text"
           placeholder="Title ..."

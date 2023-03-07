@@ -1,11 +1,15 @@
 <template>
-    <div class="recipes">
-        <RecipeItem 
-            v-for="data in dataRecipes" 
-            :key="data.id" 
-            :recipe="data" 
-        />
+  <div>
+    <div class="container">
+      <div class="d-flex flex-wrap gap-5 ms-5">
+          <RecipeItem 
+              v-for="data in dataRecipes" 
+              :key="data.id" 
+              :recipe="data" 
+          />
+      </div>
     </div>
+  </div>
 </template>
 <script>
 import RecipeItem from './RecipeItem.vue';
