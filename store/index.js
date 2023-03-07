@@ -93,25 +93,24 @@ export const actions = {
   // ---------------------------------------------------------------------------------------------------
   // nuxtServerInit diganti jadi getRecipe
   // ---------------------------------------------------------------------------------------------------
-  // nuxtServerInit({ commit }) {
-  //   return axios
-  //     .get(
-  //       "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json"
-  //     )
-  //     .then((response) => {
-  //       const recipeArray = [];
-  //       for (const key in response.data) {
-  //         recipeArray.push({ ...response.data[key], id: key });
-  //       }
-  //       commit("setRecipe", recipeArray);
-  //     })
-  //     .catch((e) => context.error(e));
-  // },
+  nuxtServerInit({ commit }) {
+    return axios
+      .get(
+        "https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json"
+      )
+      .then((response) => {
+        const recipeArray = [];
+        for (const key in response.data) {
+          recipeArray.push({ ...response.data[key], id: key });
+        }
+        commit("setRecipe", recipeArray);
+      })
+      .catch((e) => context.error(e));
+  },
   // ---------------------------------------------------------------------------------------------------
 
   addRecipe({ commit, state }, recipe) {
-    return axios
-    .post(
+    return axios.post(
         `https://recall-nuxtjs-theory-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=${state.token}`,
         { 
           ...recipe, 
@@ -127,7 +126,7 @@ export const actions = {
             userId: state.userData.userId, 
             username: state.userData.username,
             id: response.data.name,
-            dataLikes: ["null"] 
+            dataLikes: ["null"],
           }
         );
       });

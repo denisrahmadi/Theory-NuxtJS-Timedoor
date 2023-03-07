@@ -1,51 +1,122 @@
 <template>
-  <div>
-    <main>
-      <div class="add-recipe">
-        <input
-          type="text"
-          placeholder="Image Link : https://www.image.com/..."
-          class="add-recipe__title"
-          v-model="newRecipe.recipeImage"
-        />
-        <input
-          type="text"
-          placeholder="Title ..."
-          class="add-recipe__title"
-          v-model="newRecipe.recipeTitle"
-        />
-        <hr />
-        <textarea
-          placeholder="Your Recipe ....."
-          class="add-recipe__desc"
-          v-model="newRecipe.body"
-        ></textarea>
-        <button class="add-recipe__button" @click="addRecipe">
-          Add Recipe
-        </button>
+  <div class="container w-50">
+    <div class="row g-3-justify-content-md-center">
+      <app-input
+        placeholder="Traditional Chicken Fried Rice"
+        v-model="newRecipe.recipeTitle"
+      >
+        <label class="form-control">Recipe Title</label>
+      </app-input>
+      <app-input
+        placeholder="www.imagelink.com/fried-rice.jpg"
+        v-model="newRecipe.recipeImage"
+      >
+        <label class="form-control">Recipe Image</label>
+      </app-input>
+      <app-text-area 
+        v-model="newRecipe.description"
+      >
+        <label class="form-control">Recipe Description</label>
+      </app-text-area>
+      <div>
+        <div class="col-12">
+          <h2>Ingredients</h2>
+        </div>
+        <div
+          class="row g-1 justify-content-md-center"
+          style="margin-top: 5px"
+          v-for="item in ingredientCount"
+          :key="item"
+        > 
+          <app-input
+            colStyle="col-8"
+            placeholder="2 large eggs"
+            v-model="newRecipe.ingredients[item - 1]"
+          ></app-input>
+          <app-button
+            :buttonType="item !== ingredientCount ? 'delete' : 'add'"
+            @click="addIngredient(item)"
+          >
+            {{ item !== ingredientCount ? "Delete" : "Add" }}
+          </app-button>
+        </div>
+        <div class="col-12">
+          <h2>Directions</h2>
+        </div>
+        <div
+          class="row g-1 justify-content-md-center"
+          style="margin-top: 5px"
+          v-for="item in directionCount"
+          :key="item"
+        >
+          <app-input
+            colStyle="col-8"
+            :placeholder="`Step ${item}`"
+            v-model="newRecipe.directions[item - 1]"
+          ></app-input>
+          <app-button
+            :buttonType="item !== directionCount ? 'delete' : 'add'"
+            @click="addDirection(item)"
+            >{{ item !== directionCount ? "Delete" : "Add" }}</app-button
+          >
+        </div>
+        <app-button @click="addRecipe">Submit</app-button>
       </div>
-    </main>
-    {{ $store.getters.userEmail }}
+    </div>
+    {{ newRecipe }}
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
+import Button from "../../components/newRecipe/Button.vue";
+import Input from "../../components/newRecipe/Input.vue";
+import TextArea from "../../components/newRecipe/TextArea.vue";
+
 export default {
+  components: {
+    "app-input": Input,
+    "app-button": Button,
+    "app-text-area": TextArea,
+  },
   data() {
     return {
       newRecipe: {
         id: null,
         recipeImage: "",
         recipeTitle: "",
+        ingredients: [],
+        directions: [],
+        description: ``,
         body: "",
+        ingredientCount: 1,
+        directionCount: 1,
       },
+      ingredientCount: 1,
+      directionCount: 1,
     };
   },
   methods: {
     addRecipe() {
-      this.$store.dispatch("addRecipe", this.newRecipe)
-                 .then(() => this.$router.push('/') )
+      this.$store
+        .dispatch("addRecipe", this.newRecipe)
+        .then(() => this.$router.push("/"));
+    },
+    addIngredient(item) {
+      if (item === this.ingredientCount) {
+        this.ingredientCount += 1;
+      } else {
+        this.newRecipe.ingredients.splice(item - 1, 1);
+        this.ingredientCount -= 1;
+      }
+    },
+    addDirection(item) {
+      if (item === this.directionCount) {
+        this.directionCount += 1;
+      } else {
+        this.newRecipe.directions.splice(item - 1, 1);
+        this.directionCount -= 1;
+      }
     },
   },
   middleware: ["check-auth", "auth"],

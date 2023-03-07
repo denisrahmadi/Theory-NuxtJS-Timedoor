@@ -1,12 +1,24 @@
 <template>
-  <div>
+  <div class="container">
     <img class="recipes-detail__img" alt="Pasta" :src="recipe.recipeImage" />
     <h1 class="recipes-detail__title">
       {{ recipe.recipeTitle }}
     </h1>
-    <p class="recipes-detail__body">
-      {{ recipe.body }}
+    <p>
+      {{ recipe.description }}
     </p>
+    <span class="border-bottom"></span>
+    <h1>Ingredients</h1>
+    <div v-for="item in recipe.ingredients" :key="item.id">
+      <p>{{ item }}</p>
+      <hr />
+    </div>
+    <h1>Direction</h1>
+    <div v-for="(item, index) in recipe.directions" :key="index">
+      <h5>Step {{ index + 1 }}</h5>
+      <p>{{ item }}</p>
+    </div>
+    {{ recipe }}
   </div>
 </template>
 
