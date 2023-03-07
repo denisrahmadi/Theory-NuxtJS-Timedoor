@@ -1,30 +1,32 @@
 <template>
   <div>
     <div class="d-flex">
-      <nuxt-link 
-      tag="div"
-      :to="{ name: 'recipe-recipeId', params: {recipeId: recipe.id}}"
-      class="w-100"
+      <nuxt-link
+        tag="div"
+        :to="{ name: 'recipe-recipeId', params: { recipeId: recipe.id } }"
+        class="w-100"
       >
         <div class="card">
           <img
-          class="recipes-content__img card-img-top rounded"
-          :alt="recipe.recipeTitle"
-          :src="recipe.recipeImage"
-        />
+            class="recipes-content__img card-img-top rounded"
+            :alt="recipe.recipeTitle"
+            :src="recipe.recipeImage"
+          />
           <div class="card-body">
             <p class="username">{{ recipe.username }}</p>
-            <nuxt-link 
+            <nuxt-link
               tag="h1"
-              :to="{ name: 'recipe-recipeId', params: { recipeId: recipe.id } }" 
-              class="card-text fs-5 text" 
-              style="height: 45px; align-item: center;"
+              :to="{ name: 'recipe-recipeId', params: { recipeId: recipe.id } }"
+              class="card-text fs-5 text"
+              style="height: 45px; align-item: center"
             >
               {{ recipe.recipeTitle }}
             </nuxt-link>
-            <div class="recipes-content__body__review card-footer bg-transparent">
-              <img src="images/heart-black.png" alt="Heart" />
-              <p>{{ recipe.likes }} likes</p>
+            <div
+              class="recipes-content__body__review card-footer bg-transparent pe-auto"
+            >
+              <img :src="likeImage" alt="Heart" @click="likeClick" />
+              <p>{{ likeCount }} likes</p>
             </div>
           </div>
         </div>
@@ -34,12 +36,61 @@
 </template>
 <script>
 export default {
-    props: ['recipe']
+  props: ["recipe"],
+  methods: {
+    likeClick() {
+      if (!this.$store.getters.isAuthenticated) {
+        this.$router.push("/user/login");
+      }
+
+      const userEmail = this.$store.getters.userEmail;
+      const recipe = this.recipe;
+      if (recipe.dataLikes.length === 1 && recipe.dataLikes[0] === "null") {
+        recipe.dataLikes[0] = userEmail;
+      } 
+      else {
+        const checkLike = recipe.dataLikes.filter((item) => item === userEmail);
+        if (checkLike.length === 0) {
+          recipe.dataLikes.push(userEmail);
+        } 
+        else {
+          if ( recipe.dataLikes.length === 1 ) {
+            recipe.dataLikes[0] = "null"
+          } 
+          else {
+            const userEmailIndex = recipe.dataLikes.findIndex(item => item === userEmail)
+            recipe.dataLikes.splice(userEmailIndex, 1)
+          }
+        }
+      }
+      let {id: _, ...newRecipe} = recipe
+      this.$store.dispatch("likeUpdate", { recipeId: this.recipe.id, newDataRecipe: newRecipe })
+    },
+  },
+  computed: {
+    likeCount() {
+      if (this.recipe.dataLikes.length === 1) {
+        if (this.recipe.dataLikes[0] === "null") {
+          return 0;
+        }
+        return 1;
+      }
+      return this.recipe.dataLikes.length;
+    },
+    likeImage() {
+      const userEmail = this.$store.getters.userEmail;
+      const checkLike = this.recipe.dataLikes.filter((item) => item === userEmail);
+      if (checkLike.length === 0) {
+        return "images/heart-black.png";
+      }
+      return "images/heart-red.png";
+    },
+  },
 };
 </script>
 <style scoped>
 .username {
-margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 body {
@@ -72,7 +123,6 @@ main {
 }
 
 /* Recipe Content */
-
 
 .recipes-content__img {
   width: 200px;

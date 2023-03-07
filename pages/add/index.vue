@@ -25,6 +25,7 @@
         </button>
       </div>
     </main>
+    {{ $store.getters.userEmail }}
   </div>
 </template>
 
@@ -37,7 +38,6 @@ export default {
         id: null,
         recipeImage: "",
         recipeTitle: "",
-        likes: 0,
         body: "",
       },
     };
